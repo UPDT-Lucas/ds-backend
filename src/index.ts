@@ -4,6 +4,7 @@ import { getFileURL, getPdfFileURL, getImageFileURL, uploadFile, getFiles } from
 import path from 'path';
 // import mysql from 'mysql2'
 
+const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(fileUpload())
@@ -41,7 +42,9 @@ app.get('/', (req, res) => {
     res.render('index')
 })
 
-app.listen(3000)
+app.listen(port, () => {
+    console.log("the server is running")
+})
 
 // const con =  mysql.createConnection({
 //     host: "database-2.c9esqj5yaqki.us-east-2.rds.amazonaws.com", 
