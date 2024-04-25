@@ -7,7 +7,10 @@ import path from 'path';
 const port = process.env.PORT || 3000;
 const app = express();
 
-app.use(fileUpload())
+app.use(fileUpload({
+    useTempFiles: true,
+    tempFileDir: './uploads'
+}))
 
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json());
