@@ -1,7 +1,6 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsCommand } from '@aws-sdk/client-s3'
 import { AWS_BUCKET_ACCES_KEY, AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_BUCKET_SECRET_KEY } from './config'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import fs from 'fs'
 
 const client = new S3Client({
     region: AWS_BUCKET_REGION!,
@@ -12,21 +11,12 @@ const client = new S3Client({
 })
 
 export async function uploadFile(file: any) {
-    const stream = fs.createReadStream(file.tempFilePath)
     const uploadParams = {
-        Body: stream,
+        Body: file.data,
         Bucket: AWS_BUCKET_NAME,
         Key: file.name
     }
     const command = new PutObjectCommand(uploadParams)
-    return await client.send(command)
-}
-
-export async function getFile(filename: string){
-    const command = new GetObjectCommand({
-        Bucket: AWS_BUCKET_NAME,
-        Key: filename
-    })
     return await client.send(command)
 }
 
@@ -43,7 +33,16 @@ export async function getImageFileURL(filename: string, extension: string){
         Key: filename,
         ResponseContentType: `image/${extension}`
     })
-    return await getSignedUrl(client, command, { expiresIn: 3600 })
+    try {
+        await client.send(command)
+        return await getSignedUrl(client, command, { expiresIn: 3600 })
+    } catch(error: any) {
+        if(error.$metadata.httpStatusCode == "404"){
+            return "file not found"
+        }else{
+            return error
+        }
+    }
 }
 
 export async function getFileURL(filename: string){
@@ -51,7 +50,16 @@ export async function getFileURL(filename: string){
         Bucket: AWS_BUCKET_NAME,
         Key: filename,
     })
-    return await getSignedUrl(client, command, { expiresIn: 3600 })
+    try {
+        await client.send(command)
+        return await getSignedUrl(client, command, { expiresIn: 3600 })
+    } catch(error: any) {
+        if(error.$metadata.httpStatusCode == "404"){
+            return "file not found"
+        }else{
+            return error
+        }
+    }
 }
 
 export async function getPdfFileURL(filename: string){
@@ -60,5 +68,14 @@ export async function getPdfFileURL(filename: string){
         Key: filename,
         ResponseContentType: 'application/pdf'
     })
-    return await getSignedUrl(client, command, { expiresIn: 3600 })
+    try {
+        await client.send(command)
+        return await getSignedUrl(client, command, { expiresIn: 3600 })
+    } catch(error: any) {
+        if(error.$metadata.httpStatusCode == "404"){
+            return "file not found"
+        }else{
+            return error
+        }
+    }
 }
