@@ -1,16 +1,16 @@
 import express from 'express'
 import fileUpload from 'express-fileupload'
-import { getFileURL, getPdfFileURL, getImageFileURL, uploadFile, getFiles } from './s3'
+import { getFileURL, uploadFile, getFiles } from './s3'
 import cors  from 'cors'
 import path from 'path';
 // import mysql from 'mysql2'
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const app = express();
 
 app.use(fileUpload({
-    useTempFiles: true,
-    tempFileDir: './uploads'
+    useTempFiles: false,
+    // tempFileDir: './uploads'
 }))
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'public')))
@@ -28,15 +28,7 @@ app.get('/files', async (req, res, next) => {
 
 app.get('/files/:filename', async (req, res, next) => {
     const separateFilename = req.params.filename.split(".")
-    const extension = separateFilename[1]
-    let result;
-    if(extension === "pdf"){
-        result = await getPdfFileURL(req.params.filename)
-    }else if(extension==="png" || extension==="jpeg" || extension==="gif" || extension==="jpg"){
-        result = await getImageFileURL(req.params.filename, extension)
-    } else{
-        result = await getFileURL(req.params.filename)
-    }
+    let result = await getFileURL(req.params.filename)
     res.json({ result })
 })
 
@@ -47,19 +39,3 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log("the server is running")
 })
-
-// const con =  mysql.createConnection({
-//     host: "database-2.c9esqj5yaqki.us-east-2.rds.amazonaws.com", 
-//     database: "ds_db",
-//     user: "admin",
-//     password: "tWhzEOEXDh9v0tWH6CK2"
-// });
-
-
-// con.connect((err) => {
-//     if(err) {
-//         console.log(err.message);
-//         return
-//     }
-//     console.log("database connected")
-// })
