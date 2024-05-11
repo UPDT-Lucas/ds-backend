@@ -12,9 +12,19 @@ app.use(fileUpload({
     useTempFiles: false,
     // tempFileDir: './uploads'
 }))
-app.use(cors())
+
+const corsOptions = {
+    origin: '*',
+    credentilals: true,
+    optionSuccessStatus: 200
+}
+app.use(cors(corsOptions))
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json());
+app.use(function (req, res, next){
+    res.header("Access-Control-Allow-Origin", "*")
+    next()
+})
 
 app.post('/files', async (req, res, next) => {
     const result = await uploadFile(req.files!.file)
