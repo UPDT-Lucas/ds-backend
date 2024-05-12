@@ -20,31 +20,25 @@ app.use(fileUpload({
 // }
 
 app.use(cors()) 
-app.use(function (req, res, next){
-    res.setHeader("Access-Control-Allow-Origin", "*")
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type")
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST")
-    next()
-})
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json());
 
 app.post('/files', async (req, res, next) => {
     const result = await uploadFile(req.files!.file)
-    res.header("Access-Control-Allow-Origin", "*")
+    res.setHeader("Access-Control-Allow-Origin", "*")
     res.json({ result })
 })
 
 app.get('/files', async (req, res, next) => {
     const result = await getFiles()
-    res.header("Access-Control-Allow-Origin", "*")
+    res.setHeader("Access-Control-Allow-Origin", "*")
     res.json(result.Contents)
 })
 
 app.get('/files/:filename', async (req, res, next) => {
     const separateFilename = req.params.filename.split(".")
     let result = await getFileURL(req.params.filename)
-    res.header("Access-Control-Allow-Origin", "*")
+    res.setHeader("Access-Control-Allow-Origin", "*")
     res.json({ result })
 })
 
