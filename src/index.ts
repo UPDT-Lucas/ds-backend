@@ -19,15 +19,15 @@ app.use(fileUpload({
 //     optionSuccessStatus: 200
 // }
 
-app.use(cors())
+app.use(cors()) 
+app.use(function (req, res, next){
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type")
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST")
+    next()
+})
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(express.json());
-// app.use(function (req, res, next){
-//     res.header("Access-Control-Allow-Origin", "*")
-//     res.header("Access-Control-Allow-Headers", "*")
-//     res.header("Access-Control-Allow-Methods", "GET, POST")
-//     next()
-// })
 
 app.post('/files', async (req, res, next) => {
     const result = await uploadFile(req.files!.file)
